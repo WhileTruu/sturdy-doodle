@@ -3,7 +3,7 @@ import http from 'http'
 import { GET, POST, PROCESS_ARGUMENTS } from './utilities/Utilities'
 import { handleGetRequest, handlePostRequest, getPeers } from './allOfTheLogic'
 
-getPeers()
+getPeers().then(rain => console.log(rain))
 
 const server = http.createServer((request, response) => {
   switch (request.method) {

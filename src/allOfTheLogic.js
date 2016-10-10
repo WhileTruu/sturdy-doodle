@@ -37,9 +37,10 @@ function download(url) {
 export function getPeers() {
   return new Promise((resolve, reject) => {
     http.get('http://192.168.3.11:1215/getpeers', (response) => {
-      response.on('data', (data) => console.log(data))
+      let rain = ''
+      response.on('data', (chunk) => rain += chunk)
       response.on('end', () => {
-        resolve('')
+        resolve(rain)
       })
     })
   })
