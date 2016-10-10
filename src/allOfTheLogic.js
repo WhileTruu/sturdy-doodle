@@ -1,7 +1,7 @@
 import http from 'http'
 
-import { POST, PROCESS_ARGUMENTS } from '../utilities/Utilities'
-import Utilities from '../utilities/Utilities'
+import { POST, PROCESS_ARGUMENTS } from './utilities/Utilities'
+import Utilities from './utilities/Utilities'
 
 let requests = {}
 let routing = {}
@@ -34,11 +34,11 @@ function download(url) {
   })
 }
 
-function getPeers() {
+export function getPeers() {
   return new Promise((resolve, reject) => {
     http.get('http://192.168.3.11:1215/getpeers', (response) => {
       response.on('data', (data) => console.log(data))
-      response.on('end'. () => {
+      response.on('end', () => {
         resolve('')
       })
     })
