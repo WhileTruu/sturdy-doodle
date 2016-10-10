@@ -34,6 +34,17 @@ function download(url) {
   })
 }
 
+function getPeers() {
+  return new Promise((resolve, reject) => {
+    http.get('http://192.168.3.11:1215/getpeers', (response) => {
+      response.on('data', (data) => console.log(data))
+      response.on('end'. () => {
+        resolve('')
+      })
+    })
+  })
+}
+
 export function handleGetRequest(request, response) {
   const params = Utilities.parseParamsFromUrl(request.url)
   const path = Utilities.parsePathFromUrl(request.url)
