@@ -1,5 +1,7 @@
+import fs from 'fs'
 export const GET = 'GET'
 export const POST = 'POST'
+const LOGFILE = 'logs.txt'
 export const PROCESS_ARGUMENTS = getProcessArguments()
 
 function parsePathFromUrl(url) {
@@ -35,7 +37,29 @@ function getProcessArguments() {
       }
     }
   }
+  if (!processArguments.port) processArguments.port = 1215
+  if (!processArguments.directory) processArguments.directory = 'getpeers'
+  if (!processArguments.lazyness) processArguments.lazyness = 0
   return processArguments
 }
 
-export default { parsePathFromUrl, parseParamsFromUrl, getProcessArguments }
+function createLogFile(fileName) {
+  fs.writeFile(`logs/${fileName}`, '', (err) => {
+    if (err) {
+      console.log(err)
+    }
+  })
+}
+
+function writeLog(message) {
+  const dateTime = new Date().toUTCString()
+  fs.appendFile(`logs/${LOGFILE}`, `${dateTime}\t${message}\n`, (err) => {
+    if (err) throw err
+  })
+}
+
+function superDecodeURIComponent(url) {
+  return decodeURIComponent(decodeURIComponent(url))
+}
+
+export default { parsePathFromUrl, parseParamsFromUrl, getProcessArguments, createLogFile, writeLog, superDecodeURIComponent }

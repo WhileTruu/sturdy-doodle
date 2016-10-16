@@ -1,16 +1,16 @@
 import http from 'http'
 
-import { GET, POST, PROCESS_ARGUMENTS } from './utilities/Utilities'
-import { handleGetRequest, handlePostRequest, getPeers } from './allOfTheLogic'
-
-getPeers().then(rain => console.log(rain))
+import { GET, POST, PROCESS_ARGUMENTS } from './utilities'
+import { handleGetRequest, handlePostRequest } from './allOfTheLogic'
 
 const server = http.createServer((request, response) => {
   switch (request.method) {
     case GET:
+      console.log('GET REQUEST CAME IN')
       handleGetRequest(request, response)
       break
     case POST:
+      console.log('POST REQUEST CAME IN')
       handlePostRequest(request, response)
       break
     default:
