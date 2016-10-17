@@ -29,7 +29,7 @@ function updatePeers() {
       updatePeers()
       console.log(peers)
     }).catch((err) => { throw err })
-  }, 60000)
+  }, 30000)
 }
 
 function download(url) {
