@@ -8,11 +8,13 @@ let routing = {}
 let peers = {}
 
 function storeRequest(id, url) {
+  id = id.split(':')[0]
   requests[id] = { url, timestamp: new Date().valueOf() }
   Utilities.writeLog(`REQUEST\tid: ${id} \turl: ${url}`)
 }
 
 function storeRouting(id, downloadIp, fileIp) {
+  id = id.split(':')[0]
   Utilities.writeLog(`ROUTING\tid: ${id} \tdownloadIp: ${downloadIp} \tfileIp: ${fileIp}`)
   routing[id] = { downloadIp, fileIp }
 }
