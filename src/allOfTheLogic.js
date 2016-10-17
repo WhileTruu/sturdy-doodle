@@ -127,7 +127,7 @@ export function handlePostRequest(request, response) {
   const port = PROCESS_ARGUMENTS.port
 
   storeRouting(params.id, `${downloadIp}`, `${request.connection.remoteAddress}:${port}`)
-
+  console.log(downloadIp)
   if (path !== '/file' || !('id' in params)) {
     response.writeHead(404, { 'Content-Type': 'text/plain' })
     response.end()
