@@ -19,4 +19,4 @@ const server = http.createServer((request, response) => {
   }
 })
 
-server.listen(PROCESS_ARGUMENTS.port, '127.0.0.1')
+server.listen(PROCESS_ARGUMENTS.port, '192.168.6.1')
