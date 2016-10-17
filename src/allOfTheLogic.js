@@ -27,6 +27,7 @@ function updatePeers() {
         peers[result[i]] = 'alive'
       }
       updatePeers()
+      console.log(peers)
     }).catch((err) => { throw err })
   }, 60000)
 }
