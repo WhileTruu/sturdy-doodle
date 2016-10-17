@@ -5,7 +5,7 @@ import Utilities from './utilities'
 
 let requests = {}
 let routing = {}
-let peers = {'192.168.0.12': 'alive', '192.168.0.15': 'alive'}
+let peers = {}
 
 function storeRequest(id, url) {
   requests[id] = { url, timestamp: new Date().valueOf() }
@@ -60,7 +60,10 @@ export function getPeers() {
     http.get(options, (response) => {
       let jsonString = ''
       response.on('data', (chunk) => jsonString += chunk)
-      response.on('end', () => resolve(JSON.parse(jsonString)))
+      response.on('end', () => {
+        console.log(jsonString)
+        resolve(JSON.parse(jsonString))
+      })
     }).on('error', error => {
       reject(error)
     }).on('timeout', () => console.log('TIMEOUT WOOP WOOP'))
