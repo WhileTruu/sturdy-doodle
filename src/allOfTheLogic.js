@@ -28,7 +28,7 @@ function updatePeers() {
       }
       updatePeers()
     }).catch((err) => { throw err })
-  }, 30000)
+  }, 60000)
 }
 
 function download(url) {
