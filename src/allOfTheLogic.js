@@ -67,7 +67,7 @@ export function getPeers() {
     }).on('error', error => {
       console.log(error)
       reject(error)
-    }).on('timeout', () => console.log('TIMEOUT WOOP WOOP'))
+    }).on('timeout', () => reject('TIMEOUt'))
   })
 }
 
