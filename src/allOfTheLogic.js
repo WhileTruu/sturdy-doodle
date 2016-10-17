@@ -17,6 +17,16 @@ function storeRouting(id, downloadIp, fileIp) {
   routing[id] = { downloadIp, fileIp }
 }
 
+getPeers().then((result) => {
+  for (let key in peers) {
+    if (result.indexOf(key) < 0) peers[key] = 'dead'
+  }
+  for (let i = 0; i < result.length; i++) {
+    peers[result[i]] = 'alive'
+  }
+  console.log(peers)
+}).catch((err) => { throw err })
+
 function updatePeers() {
   setTimeout(() => {
     getPeers().then((result) => {
@@ -61,7 +71,7 @@ export function getPeers() {
       let jsonString = ''
       response.on('data', (chunk) => jsonString += chunk)
       response.on('end', () => {
-        resolve(JSON.parse(jsonString))
+        resolve(JSON.parse(jsonString).map(address => address.split(':')[0]))
       })
     }).on('error', error => {
       console.log(error)
