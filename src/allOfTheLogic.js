@@ -29,7 +29,7 @@ function updatePeers() {
       updatePeers()
       console.log(peers)
     }).catch((err) => { throw err })
-  }, 30000)
+  }, 10000)
 }
 
 function download(url) {
@@ -65,6 +65,7 @@ export function getPeers() {
         resolve(JSON.parse(jsonString))
       })
     }).on('error', error => {
+      console.log(error)
       reject(error)
     }).on('timeout', () => console.log('TIMEOUT WOOP WOOP'))
   })
