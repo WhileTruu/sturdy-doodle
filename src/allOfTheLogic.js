@@ -5,7 +5,7 @@ import Utilities from './utilities'
 
 let requests = {}
 let routing = {}
-let peers = {}
+let peers = {'192.168.0.12': 'alive', '192.168.0.15': 'alive'}
 
 function storeRequest(id, url) {
   requests[id] = { url, timestamp: new Date().valueOf() }
@@ -62,8 +62,7 @@ export function getPeers() {
       response.on('end', () => resolve(JSON.parse(jsonString)))
     }).on('error', error => {
       reject(error)
-      // TODO: REMOVE SHOULD DELEGATE. Is only here for testing.
-    }).on('timeout', () => resolve(['localhost:1220']))
+    }).on('timeout', () => console.log('TIMEOUT WOOP WOOP'))
   })
 }
 
@@ -80,22 +79,22 @@ export function handleGetRequest(request, response) {
   // Store the request for umm stuff.
   storeRequest(params.id, Utilities.superDecodeURIComponent(params.url), '')
   // Same for routing table.
-  storeRouting(params.id, request.headers.host, '')
-  console.log(request.headers.host)
+  storeRouting(params.id, request.connection.remoteAddress, '')
 
   response.writeHead(200, { 'Content-Type': 'text/plain' })
   response.write('Possibly getting requested info.')
   response.end()
 
-  if (shouldDelegateRequest() && PROCESS_ARGUMENTS.port != 1220) {
+  if (shouldDelegateRequest()) {
     // TODO send request to random neighbour
-    delegateRequest('localhost', 1220, params.id, params.url)
+    const randomNeighbour = getRandomNeighbour()
+    delegateRequest(randomNeighbour, PROCESS_ARGUMENTS.port, params.id, params.url)
   } else {
     download(Utilities.superDecodeURIComponent(params.url))
       .then(res => {
-        const downloadIp = routing[params.id].downloadIp.split(':')[0]
-        const port = routing[params.id].downloadIp.split(':')[1]
-        console.log(downloadIp, port)
+        const downloadIp = routing[params.id].downloadIp
+        const port = PROCESS_ARGUMENTS.port
+        storeRouting(params.id, request.connection.remoteAddress, request.headers.host)
         forwardRequest(params.id, downloadIp, port, res)
       })
       .catch(err => console.log(err))
@@ -106,28 +105,30 @@ export function handlePostRequest(request, response) {
   const params = Utilities.parseParamsFromUrl(request.url)
   const path = Utilities.parsePathFromUrl(request.url)
   // Allow only /file get requests that have an id param.
+  const downloadIp = routing[params.id].downloadIp
+  const port = PROCESS_ARGUMENTS.port
+
+  storeRouting(params.id, `${downloadIp}`, `${request.connection.remoteAddress}:${port}`)
 
   if (path !== '/file' || !('id' in params)) {
     response.writeHead(404, { 'Content-Type': 'text/plain' })
     response.end()
-  // case when I requested the crap
-  } else if (request.headers.host == `localhost:${PROCESS_ARGUMENTS.port}`) {
+  } else if (`${downloadIp}:${port}` == `localhost:${PROCESS_ARGUMENTS.port}` || `${downloadIp}:${port}` == `::ffff:127.0.0.1:${PROCESS_ARGUMENTS.port}`) {
     let content = ''
     request.on('data', (chunk) => content += chunk)
-    request.on('end', () => console.log(new Buffer(JSON.parse(content).content, 'base64').toString()))
-  // if I didn't request it, soemone else did!
+    request.on('end', () => {
+      if (content.trim() != '') console.log(new Buffer(JSON.parse(content).content, 'base64').toString().substring(0, 100))
+      response.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.end()
+    })
   } else {
-    const downloadIp = routing[params.id].downloadIp.split(':')[0]
-    const port = routing[params.id].downloadIp.split(':')[1]
-    storeRouting(params.id, downloadIp, request.headers.host)
     let content = ''
     request.on('data', (chunk) => content += chunk)
-    request.on('end', () => forwardRequest(params.id, downloadIp, port, content))
-    forwardRequest(params.id, downloadIp, port, new Buffer(content).toString('base64'))
-    // TODO: on this request I should forward the data to it's rightful heir.
-    response.writeHead(200, { 'Content-Type': 'text/plain' })
-    response.write('I am post, the destroyer of worlds.')
-    response.end()
+    request.on('end', () => {
+      forwardRequest(params.id, downloadIp, port, content)
+      response.writeHead(200, { 'Content-Type': 'text/plain' })
+      response.end()
+    })
   }
 }
 
@@ -147,6 +148,7 @@ function forwardRequest(id, ip, port, data) {
   let request = http.request(options)
   request.write(JSON.stringify(data))
   request.end()
+  request.on('error', err => console.log(err))
 }
 
 function shouldDelegateRequest() {
@@ -154,11 +156,12 @@ function shouldDelegateRequest() {
 }
 
 function getRandomNeighbour() {
-  return peers[0]
+  const peerIps = Object.keys(peers).filter(peerIp => peers[peerIp] == 'alive')
+  return peerIps[Math.floor(Math.random() * peerIps.length)]
 }
 
 function delegateRequest(ip, port, id, url) {
-  console.log('DELEGATING')
+  console.log('DELEGATING', ip)
   const options = {
     hostname: ip,
     port: port,
@@ -170,6 +173,7 @@ function delegateRequest(ip, port, id, url) {
   }
   let request = http.request(options)
   request.end()
+  request.on('error', err => console.log(err))
 }
 
 updatePeers()
