@@ -131,7 +131,7 @@ export function handlePostRequest(request, response) {
   if (path !== '/file' || !('id' in params)) {
     response.writeHead(404, { 'Content-Type': 'text/plain' })
     response.end()
-  } else if (`${downloadIp}:${port}` == `localhost:${PROCESS_ARGUMENTS.port}` || `${downloadIp}:${port}` == `::ffff:127.0.0.1:${PROCESS_ARGUMENTS.port}`) {
+  } else if (`${downloadIp}` == 'localhost' || `${downloadIp}:${port}` == `::ffff:127.0.0.1:${PROCESS_ARGUMENTS.port}`) {
     let content = ''
     request.on('data', (chunk) => content += chunk)
     request.on('end', () => {
