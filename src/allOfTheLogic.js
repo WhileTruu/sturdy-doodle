@@ -74,6 +74,7 @@ export function handleGetRequest(request, response) {
   if (path !== '/download') {
     response.writeHead(404, { 'Content-Type': 'text/plain' })
     response.end()
+    return
   }
 
   // Store the request for umm stuff.
