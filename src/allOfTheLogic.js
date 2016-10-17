@@ -122,6 +122,7 @@ export function handlePostRequest(request, response) {
   const params = Utilities.parseParamsFromUrl(request.url)
   const path = Utilities.parsePathFromUrl(request.url)
   // Allow only /file get requests that have an id param.
+  if (!routing[params.id]) return
   const downloadIp = routing[params.id].downloadIp
   const port = PROCESS_ARGUMENTS.port
 
