@@ -54,7 +54,7 @@ function download(url) {
 }
 
 export function getPeers() {
-  const options = { hostname: '192.168.3.11', port: 1215, timeout: 5000, path: 'getpeers' }
+  const options = { hostname: '192.168.3.11', port: 1215, timeout: 10000, path: 'getpeers' }
 
   return new Promise((resolve, reject) => {
     http.get(options, (response) => {
