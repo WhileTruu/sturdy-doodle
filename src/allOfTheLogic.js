@@ -29,7 +29,7 @@ function updatePeers() {
       updatePeers()
       console.log(peers)
     }).catch((err) => { throw err })
-  }, 10000)
+  }, 60000)
 }
 
 function download(url) {
@@ -61,7 +61,6 @@ export function getPeers() {
       let jsonString = ''
       response.on('data', (chunk) => jsonString += chunk)
       response.on('end', () => {
-        console.log(jsonString)
         resolve(JSON.parse(jsonString))
       })
     }).on('error', error => {
