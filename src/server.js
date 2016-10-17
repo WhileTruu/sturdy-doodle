@@ -19,4 +19,4 @@ const server = http.createServer((request, response) => {
   }
 })
 
-server.listen(PROCESS_ARGUMENTS.port, 'localhost')
+server.listen(PROCESS_ARGUMENTS.port, '127.0.0.1')
